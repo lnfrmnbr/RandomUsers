@@ -2,5 +2,7 @@
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.dagger.hilt.android) apply false
+    kotlin("kapt") version "1.9.23" apply false
     alias(libs.plugins.kotlin.compose) apply false
 }
