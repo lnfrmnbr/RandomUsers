@@ -6,17 +6,22 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -53,6 +58,7 @@ fun ProfileScreen(
 ) {
     val user by viewModel.user.collectAsState()
     val context = LocalContext.current
+    val scrollState = rememberScrollState()
 
     LaunchedEffect(userId) {
         userId?.let {
@@ -69,6 +75,8 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp, vertical = 40.dp)
+                .verticalScroll(scrollState)
+                .background(Color.White)
         ) {
             Box(
                 modifier = Modifier
@@ -177,6 +185,71 @@ fun ProfileScreen(
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(PurpleGrey80)
+                    .padding(12.dp),
+                contentAlignment = Alignment.TopStart
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    InfoText(user?.gender, "Пол")
+                    InfoText(user?.let { "${it.birthDay} (${it.age} лет)" }, "Дата рождения")
+                    InfoText(user?.nat, "Национальность")
+                    InfoText(user?.registered, "Дата регистрации")
+                    InfoText(user?.address, "Адрес")
+                    InfoText(user?.postcode, "Почтовый индекс")
+                    InfoText(user?.cell, "Мобильный телефон")
+                    InfoText(user?.timezone, "Часовой пояс", false)
+
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun InfoText(text: String?, textTitle: String, isDividerNeed: Boolean = true) {
+    if (text != null) {
+        Box(
+            contentAlignment = Alignment.TopStart,
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+
+        Box(
+            contentAlignment = Alignment.TopStart
+        ) {
+            Text(
+                text = textTitle,
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.Bold,
+                color = PurpleGrey40,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+
+        if (isDividerNeed) {
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 8.dp),
+                thickness = 1.dp,
+                color = PurpleGrey40
+            )
         }
     }
 }

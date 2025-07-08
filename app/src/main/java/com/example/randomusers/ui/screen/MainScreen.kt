@@ -9,13 +9,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.randomusers.data.model.User
+import com.example.randomusers.ui.theme.PurpleGrey40
 import com.example.randomusers.ui.theme.PurpleGrey80
 import com.example.randomusers.ui.viewmodel.UserViewModel
 
@@ -43,15 +48,44 @@ fun MainScreen(viewModel: UserViewModel = hiltViewModel(), onUserClick: (String?
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 24.dp)
+                .padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 60.dp)
         ) {
-            Button(onClick = { viewModel.loadUsers(forceRefresh = true) }) {
-                Text("Обновить")
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 5.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Box(
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Text(
+                        text = "RandomUsers",
+                        style = MaterialTheme.typography.displaySmall,
+                        fontWeight = FontWeight.Bold,
+                        color = PurpleGrey40,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
+                IconButton(
+                    onClick = { viewModel.loadUsers(forceRefresh = true) },
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(PurpleGrey40),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = "Refresh",
+                        tint = PurpleGrey80
+                    )
+                }
             }
 
             Spacer(Modifier.height(16.dp))
