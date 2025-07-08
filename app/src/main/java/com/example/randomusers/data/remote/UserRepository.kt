@@ -1,4 +1,4 @@
-package com.example.randomusers.data.remote.repository
+package com.example.randomusers.data.remote
 
 import com.example.randomusers.data.local.UserDao
 import com.example.randomusers.data.local.UserEntity.Companion.fromUser
@@ -43,5 +43,9 @@ class UserRepository @Inject constructor(
         } catch (e: Exception) {
             throw e
         }
+    }
+
+    suspend fun getUser(userId: String): User? {
+        return userDao.getUserById(userId)?.toUser()
     }
 }

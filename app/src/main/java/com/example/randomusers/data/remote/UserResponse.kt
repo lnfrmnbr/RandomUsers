@@ -31,7 +31,7 @@ data class UserDto(
             picture = picture?.large,
             gender = gender,
             postcode = location?.postcode,
-            coordinates = "${location?.coordinates?.longitude} ${location?.coordinates?.latitude}",
+            coordinates = "${location?.coordinates?.latitude}, ${location?.coordinates?.longitude}",
             timezone = location?.timezone?.offset,
             login = login.username,
             cell = cell,

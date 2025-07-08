@@ -2,6 +2,7 @@ package com.example.randomusers.ui.screen
 
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,14 +32,18 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.randomusers.data.model.User
+import com.example.randomusers.ui.theme.PurpleGrey80
 import com.example.randomusers.ui.viewmodel.UserViewModel
 
 @Composable
-fun MainScreen(viewModel: UserViewModel = hiltViewModel()) {
-    val users = viewModel.users
+fun MainScreen(viewModel: UserViewModel = hiltViewModel(), onUserClick: (String?) -> Unit) {
+    val users by viewModel.users.collectAsState()
 
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+
     ) {
         Column(
             modifier = Modifier
@@ -53,7 +60,7 @@ fun MainScreen(viewModel: UserViewModel = hiltViewModel()) {
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(users) { user ->
-                    UserCard(user)
+                    UserCard(user, onUserClick)
                 }
             }
         }
@@ -61,29 +68,30 @@ fun MainScreen(viewModel: UserViewModel = hiltViewModel()) {
 }
 
 @Composable
-fun UserCard(user: User) {
+fun UserCard(user: User, onUserClick: (String?) -> Unit) {
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(16.dp))
-            .background(Color.White)
+            .background(PurpleGrey80)
             .padding(12.dp)
+            .clickable { onUserClick(user.id) }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    AsyncImage(
-                        model = user.picture,
-                        contentDescription = "Иконка пользователя",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.size(100.dp)
-                    )
-                }
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(16.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                AsyncImage(
+                    model = user.picture,
+                    contentDescription = "Иконка пользователя",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.size(100.dp)
+                )
+            }
 
             Column(
                 modifier = Modifier.weight(1f),
