@@ -18,6 +18,7 @@ class UserRepository @Inject constructor(
             if (forceRefresh) {
                 val response = apiService.getUsers()
                 if (response.isSuccessful) {
+                    userDao.clear()
                     val users = (response.body()?.results ?: emptyList()).map { it.toUser() }
                     userDao.insertAll(users.map { fromUser(it) })
                     users
