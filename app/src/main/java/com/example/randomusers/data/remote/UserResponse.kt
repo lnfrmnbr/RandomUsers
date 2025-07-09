@@ -1,6 +1,8 @@
 package com.example.randomusers.data.remote
 
 import com.example.randomusers.data.model.User
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 data class UserResponse(
     val results: List<UserDto>,
@@ -35,8 +37,8 @@ data class UserDto(
             timezone = location?.timezone?.offset,
             login = login.username,
             cell = cell,
-            birthDay = dob?.date,
-            registered = dob?.date,
+            birthDay = parseDate(dob?.date),
+            registered = parseDate(registered?.date),
             age = dob?.age,
             nat = nat
         )
@@ -106,3 +108,14 @@ data class Info(
     val page: Int?,
     val version: String?
 )
+
+private fun parseDate(dateStr: String?): String? {
+    try {
+    val dateTime = ZonedDateTime.parse(dateStr)
+
+    val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+    return dateTime.format(formatter)}
+    catch (e: Exception){
+        return dateStr
+    }
+}

@@ -179,7 +179,7 @@ fun ProfileScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             ContactCard(
-                                user?.coordinates,
+                                "${user?.address}, ${user?.coordinates}",
                                 Icons.Default.LocationOn,
                                 "Посмотреть на карте"
                             )
@@ -223,7 +223,6 @@ fun ProfileScreen(
                     InfoText(user?.let { "${it.birthDay} (${it.age} лет)" }, "Дата рождения")
                     InfoText(user?.nat, "Национальность")
                     InfoText(user?.registered, "Дата регистрации")
-                    InfoText(user?.address, "Адрес", onClick = user?.address?.let { viewModel.openMap(context, it) })
                     InfoText(user?.postcode, "Почтовый индекс")
                     InfoText(user?.cell, "Мобильный телефон")
                     InfoText(user?.timezone, "Часовой пояс", isDividerNeed = false)
@@ -235,11 +234,10 @@ fun ProfileScreen(
 }
 
 @Composable
-fun InfoText(text: String?, textTitle: String, onClick: Unit? = null, isDividerNeed: Boolean = true) {
+fun InfoText(text: String?, textTitle: String, isDividerNeed: Boolean = true) {
     if (text != null) {
         Box(
-            contentAlignment = Alignment.TopStart,
-            modifier = Modifier.clickable(onClick = { onClick })
+            contentAlignment = Alignment.TopStart
         ) {
             Text(
                 text = text,
