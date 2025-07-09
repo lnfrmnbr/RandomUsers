@@ -35,27 +35,43 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun sendEmail(context: Context, email: String) {
-        val intent = Intent(Intent.ACTION_SENDTO).apply {
-            data = "mailto:".toUri()
-            putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
+        try {
+            val intent = Intent(Intent.ACTION_SENDTO).apply {
+                data = "mailto:".toUri()
+                putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
+            }
+            val chooser = Intent.createChooser(intent, "Отправить сообщение через...")
+            context.startActivity(chooser)
+        } catch (e: Exception) {
+            _errorMessage.value = e.localizedMessage ?: "Ошибка откравки сообщения"
         }
-        val chooser = Intent.createChooser(intent, "Отправить сообщение через...")
-        context.startActivity(chooser)
     }
 
     fun makePhoneCall(context: Context, phoneNumber: String) {
-        val intent = Intent(Intent.ACTION_DIAL).apply {
-            data = "tel:$phoneNumber".toUri()
+        try {
+            val intent = Intent(Intent.ACTION_DIAL).apply {
+                data = "tel:$phoneNumber".toUri()
+            }
+            val chooser = Intent.createChooser(intent, "Позвонить с помощью...")
+            context.startActivity(chooser)
+        } catch (e: Exception) {
+            _errorMessage.value = e.localizedMessage ?: "Ошибка совершения вызова"
         }
-        val chooser = Intent.createChooser(intent, "Позвонить с помощью...")
-        context.startActivity(chooser)
     }
 
     fun openMap(context: Context, address: String) {
-        val intent = Intent(Intent.ACTION_VIEW).apply {
+        try {
+            val intent = Intent(Intent.ACTION_VIEW).apply {
             data = "geo:0,0?q=$address".toUri()
         }
         val chooser = Intent.createChooser(intent, "Посмотреть на карте с помощью...")
         context.startActivity(chooser)
+        } catch (e: Exception) {
+            _errorMessage.value = e.localizedMessage ?: "Ошибка совершения вызова"
+        }
+    }
+
+    fun clearError() {
+        _errorMessage.value = null
     }
 }

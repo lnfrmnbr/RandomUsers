@@ -35,4 +35,8 @@ class UserViewModel @Inject constructor(
             }
         }
     }
+
+    fun clearError(){
+        _errorMessage.value = null
+    }
 }

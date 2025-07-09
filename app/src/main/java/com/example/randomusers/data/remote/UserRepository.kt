@@ -37,9 +37,8 @@ class UserRepository @Inject constructor(
             val usersFromDb = userDao.getUsersSimpleInfo()
             if (usersFromDb.isNotEmpty()) {
                 usersFromDb.map { it.toUserSimpleInfo() }
-            } else {
-                throw e
             }
+            throw e
         } catch (e: Exception) {
             throw e
         }

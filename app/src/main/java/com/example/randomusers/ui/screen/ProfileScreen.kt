@@ -48,6 +48,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.zIndex
+import com.example.randomusers.ui.screen.components.ErrorDialog
 import com.example.randomusers.ui.theme.PurpleGrey40
 import com.example.randomusers.ui.theme.PurpleGrey80
 
@@ -59,6 +60,24 @@ fun ProfileScreen(
     val user by viewModel.user.collectAsState()
     val context = LocalContext.current
     val scrollState = rememberScrollState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
+    var showErrorDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(errorMessage) {
+        if (!errorMessage.isNullOrEmpty()) {
+            showErrorDialog = true
+        }
+    }
+
+    if (showErrorDialog) {
+        ErrorDialog(
+            errorMessage = errorMessage,
+            onDismiss = {
+                showErrorDialog = false
+                viewModel.clearError()
+            }
+        )
+    }
 
     LaunchedEffect(userId) {
         userId?.let {
@@ -204,10 +223,10 @@ fun ProfileScreen(
                     InfoText(user?.let { "${it.birthDay} (${it.age} лет)" }, "Дата рождения")
                     InfoText(user?.nat, "Национальность")
                     InfoText(user?.registered, "Дата регистрации")
-                    InfoText(user?.address, "Адрес")
+                    InfoText(user?.address, "Адрес", onClick = user?.address?.let { viewModel.openMap(context, it) })
                     InfoText(user?.postcode, "Почтовый индекс")
                     InfoText(user?.cell, "Мобильный телефон")
-                    InfoText(user?.timezone, "Часовой пояс", false)
+                    InfoText(user?.timezone, "Часовой пояс", isDividerNeed = false)
 
                 }
             }
@@ -216,10 +235,11 @@ fun ProfileScreen(
 }
 
 @Composable
-fun InfoText(text: String?, textTitle: String, isDividerNeed: Boolean = true) {
+fun InfoText(text: String?, textTitle: String, onClick: Unit? = null, isDividerNeed: Boolean = true) {
     if (text != null) {
         Box(
             contentAlignment = Alignment.TopStart,
+            modifier = Modifier.clickable(onClick = { onClick })
         ) {
             Text(
                 text = text,
@@ -288,7 +308,7 @@ fun ContactCard(
         onDismissRequest = { expanded = false },
         modifier = Modifier
             .zIndex(1f)
-            .background(PurpleGrey80)
+            .background(Color.White)
     ) {
         DropdownMenuItem(
             onClick = {
@@ -300,7 +320,7 @@ fun ContactCard(
             text = {
                 Text(
                     "$actionText $text",
-                    color = Color.White
+                    color = PurpleGrey40
                 )
             })
         DropdownMenuItem(
@@ -311,7 +331,7 @@ fun ContactCard(
             text = {
                 Text(
                     "Скопировать $text",
-                    color = Color.White
+                    color = PurpleGrey40
                 )
             })
     }
