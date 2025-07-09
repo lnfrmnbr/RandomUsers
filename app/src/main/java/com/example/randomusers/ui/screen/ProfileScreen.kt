@@ -18,6 +18,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -115,12 +116,21 @@ fun ProfileScreen(
                             .clip(RoundedCornerShape(50.dp)),
                         contentAlignment = Alignment.Center
                     ) {
-                        AsyncImage(
-                            model = user?.picture,
-                            contentDescription = "Иконка пользователя",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.size(90.dp)
-                        )
+                        if (!user?.picture.isNullOrEmpty()) {
+                            AsyncImage(
+                                model = user?.picture,
+                                contentDescription = "Иконка пользователя",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.size(90.dp)
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "Иконка пользователя отсутствует",
+                                tint = PurpleGrey40,
+                                modifier = Modifier.size(90.dp)
+                            )
+                        }
                     }
 
                     Box(
@@ -128,7 +138,7 @@ fun ProfileScreen(
                         modifier = Modifier.padding(top = 8.dp)
                     ) {
                         Text(
-                            text = user?.name.toString(),
+                            text = user?.name ?: "Имя пользователя",
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             color = Color.Black,
@@ -142,7 +152,7 @@ fun ProfileScreen(
                         modifier = Modifier.padding(top = 4.dp)
                     ) {
                         Text(
-                            text = "@${user?.login}",
+                            text = "@" + (user?.login ?: "логинПользователя"),
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold,
                             color = Color.Black,
@@ -166,7 +176,7 @@ fun ProfileScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             ContactCard(
-                                user?.phone, Icons.Default.Phone, "Позвонить"
+                                user?.phone, Icons.Default.Phone, "Позвонить", "Номер телефона"
                             ) { user?.phone?.let { viewModel.makePhoneCall(context, it) } }
                         }
 
@@ -181,7 +191,7 @@ fun ProfileScreen(
                             ContactCard(
                                 "${user?.address}, ${user?.coordinates}",
                                 Icons.Default.LocationOn,
-                                "Посмотреть на карте"
+                                "Посмотреть на карте", "Местоположение"
                             )
                             { user?.coordinates?.let { viewModel.openMap(context, it) } }
                         }
@@ -197,7 +207,7 @@ fun ProfileScreen(
                             ContactCard(
                                 user?.email,
                                 Icons.Default.Email,
-                                "Написать"
+                                "Написать", "Почта"
                             ) { user?.email?.let { viewModel.sendEmail(context, it) } }
 
                         }
@@ -277,6 +287,7 @@ fun ContactCard(
     text: String?,
     icon: ImageVector,
     actionText: String,
+    ifNullText: String,
     action: (() -> Unit)? = null
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -293,7 +304,7 @@ fun ContactCard(
             tint = PurpleGrey80
         )
         Text(
-            text = text.toString(),
+            text = text ?: ifNullText,
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Normal,
             color = PurpleGrey80,
@@ -301,36 +312,38 @@ fun ContactCard(
             overflow = TextOverflow.Ellipsis
         )
     }
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = { expanded = false },
-        modifier = Modifier
-            .zIndex(1f)
-            .background(Color.White)
-    ) {
-        DropdownMenuItem(
-            onClick = {
-                if (action != null) {
-                    action()
-                }
-                expanded = false
-            },
-            text = {
-                Text(
-                    "$actionText $text",
-                    color = PurpleGrey40
-                )
-            })
-        DropdownMenuItem(
-            onClick = {
-                text?.let { AnnotatedString(it) }?.let { clipboardManager.setText(it) }
-                expanded = false
-            },
-            text = {
-                Text(
-                    "Скопировать $text",
-                    color = PurpleGrey40
-                )
-            })
+    if (text != null) {
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .zIndex(1f)
+                .background(Color.White)
+        ) {
+            DropdownMenuItem(
+                onClick = {
+                    if (action != null) {
+                        action()
+                    }
+                    expanded = false
+                },
+                text = {
+                    Text(
+                        "$actionText $text",
+                        color = PurpleGrey40
+                    )
+                })
+            DropdownMenuItem(
+                onClick = {
+                    AnnotatedString(text).let { clipboardManager.setText(it) }
+                    expanded = false
+                },
+                text = {
+                    Text(
+                        "Скопировать $text",
+                        color = PurpleGrey40
+                    )
+                })
+        }
     }
 }
